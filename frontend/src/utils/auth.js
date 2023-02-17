@@ -1,4 +1,4 @@
-export const BASE_URL = "https://auth.nomoreparties.co";
+export const BASE_URL = "https://api.mesto.viznyi.front.nomoredomains.work";
 
 function getResponseData(res) {
   if (!res.ok) {
@@ -35,8 +35,8 @@ export const login = (email, password) => {
   })
     .then(getResponseData)
     .then((data) => {
-      if (data.token) {
-        localStorage.setItem("token", data.token);
+      if (data.jwt) {
+        localStorage.setItem("token", data.jwt);
         return data;
       } else {
         return;
@@ -56,3 +56,16 @@ export const getContent = (token) => {
     .then(getResponseData)
     .then((data) => data);
 };
+
+export const getCards = (token) => {
+  return fetch(`${BASE_URL}/cards`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(getResponseData)
+    .then((data) => data);
+}

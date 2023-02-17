@@ -3,7 +3,7 @@
     this._url = url;
     this._token = token;
     this._headers = {
-      authorization: this._token,
+      Authorization: `Bearer ${this._token}`,
       'Content-Type': 'application/json'
     }
   }
@@ -18,21 +18,21 @@
   }
 
   getImages() {
-    return fetch(`${this._url}/v1/cohort-50/cards`, {
+    return fetch(`${this._url}/cards`, {
       headers: this._headers
     })
     .then(this._getResponseData)
   }
 
   getProfileInfo() {
-    return fetch(`${this._url}/v1/cohort-50/users/me`, {
+    return fetch(`${this._url}/users/me`, {
     headers: this._headers
   })
     .then(this._getResponseData)
   }
 
   editInfo(values) {
-    return fetch(`${this._url}/v1/cohort-50/users/me`, {
+    return fetch(`${this._url}/users/me`, {
       method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify({
@@ -44,7 +44,7 @@
   }
 
   addCard(values) {
-    return fetch(`${this._url}/v1/cohort-50/cards`, {
+    return fetch(`${this._url}/cards`, {
       method: 'POST',
       headers: this._headers,
       body: JSON.stringify({
@@ -56,7 +56,7 @@
   }
 
   deleteCard(cardId) {
-    return fetch(`${this._url}/v1/cohort-50/cards/${cardId}`, {
+    return fetch(`${this._url}/cards/${cardId}`, {
       method: 'DELETE',
       headers: this._headers
     })
@@ -64,7 +64,7 @@
   }
 
   likeCard(cardId) {
-    return fetch(`${this._url}/v1/cohort-50/cards/${cardId}/likes`, {
+    return fetch(`${this._url}/cards/${cardId}/likes`, {
       method: 'PUT',
       headers: this._headers
 
@@ -73,7 +73,7 @@
   }
 
   unLikeCard(cardId) {
-    return fetch(`${this._url}/v1/cohort-50/cards/${cardId}/likes`, {
+    return fetch(`${this._url}/cards/${cardId}/likes`, {
       method: 'DELETE',
       headers: this._headers
 
@@ -92,7 +92,7 @@
   }
 
   setAvatar(url) {
-    return fetch(`${this._url}/v1/cohort-50/users/me/avatar`, {
+    return fetch(`${this._url}/users/me/avatar`, {
       method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify({
@@ -104,7 +104,9 @@
   }
 
 }
-const api = new Api('https://nomoreparties.co', '83d4c574-f43f-43fb-a250-62d63411e3fe')
+const token = localStorage.getItem("token");
+
+const api = new Api('https://api.mesto.viznyi.front.nomoredomains.work', token)
 
 export {api};
 

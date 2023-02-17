@@ -1,8 +1,7 @@
 import React from 'react';
 import penFoto from '../pictures/penfoto.svg';
-import { api } from '../utils/Api.js';
 import Card from './Card.js';
-import {CurrentUserContext } from '../contexts/CurrentUserContext.js'
+import { CurrentUserContext } from '../contexts/CurrentUserContext.js'
 
 
 function Main(props) {
@@ -34,10 +33,10 @@ function Main(props) {
         <button type="button" className="profile__add" onClick={props.onAddPlace} />
       </section>
       <section className="elements">
-        {props.cards.map(cardEl => (
+        {props.cards ? props.cards.map(cardEl => (
           
           <Card card={cardEl} key={cardEl._id} onCardClick={props.onCardClick} onCardLike={props.onCardLike} onCardDelete={props.onCardDelete}/>
-        ))}
+        )) : ""}  
       </section>
     </main>
   )

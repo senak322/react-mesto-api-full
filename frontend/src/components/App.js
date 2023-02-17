@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Header from "./Header.js";
 import Main from "./Main.js";
 import Footer from "./Footer.js";
@@ -14,7 +14,7 @@ import Login from "./Login.js";
 import Register from "./Register.js";
 import ProtectedRoute from "./ProtectedRoute.js";
 import InfoTooltip from "./InfoTooltip.js";
-import { register, login, getContent } from "../utils/auth.js";
+import { register, login, getContent, getCards } from "../utils/auth.js";
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -34,7 +34,7 @@ function App() {
   const history = useHistory();
   const [loggedIn, setLoggedIn] = useState(false);
 
-  function tokenCheck() {
+  const cbTokenCheck = useCallback(() => {
     const token = localStorage.getItem("token");
     if (token) {
       getContent(token)
@@ -43,24 +43,32 @@ function App() {
             setLoggedIn(true);
             history.push("/");
             setUserEmail(res.data.email);
+            setCurrentUser(res.data);
           }
         })
         .catch((err) => {
           console.log(err);
         });
+      getCards(token)
+        .then((res) => {
+          setCards(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-  }
+  }, [history]);
 
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    const isLiked = card.likes.some((i) => i === currentUser._id);
 
     // Отправляем запрос в API и получаем обновлённые данные карточки
     api
       .changeLikeCardStatus(card._id, isLiked)
       .then((newCard) => {
         setCards((cards) =>
-          cards.map((c) => (c._id === card._id ? newCard : c))
+          cards.map((c) => (c._id === card._id ? newCard.data : c))
         );
       })
       .catch((err) => {
@@ -140,7 +148,7 @@ function App() {
     api
       .editInfo(data)
       .then((res) => {
-        setCurrentUser(res);
+        setCurrentUser(res.data);
         closeAllPopups();
       })
       .catch((err) => {
@@ -156,7 +164,7 @@ function App() {
     api
       .setAvatar(data)
       .then((res) => {
-        setCurrentUser(res);
+        setCurrentUser(res.data);
         closeAllPopups();
       })
       .catch((err) => {
@@ -167,12 +175,14 @@ function App() {
       });
   }
 
-  function handleAddPlaceSubmit(data) {
+  function handleAddPlaceSubmit(card) {
     setIsLoading(true);
     api
-      .addCard(data)
+      .addCard(card)
       .then((res) => {
-        setCards([res, ...cards]);
+        console.log(res.data);
+        console.log(cards);
+        setCards([res.data, ...cards]);
         closeAllPopups();
       })
       .catch((err) => {
@@ -215,7 +225,7 @@ function App() {
   function handleLogin(email, password) {
     login(email, password)
       .then((res) => {
-        if (res.token) {
+        if (res.jwt) {
           setLoggedIn(true);
           history.push("/");
         }
@@ -226,13 +236,12 @@ function App() {
       });
   }
 
-  useEffect(() => {
-    tokenCheck();
+  const getInfo = useCallback(() => {
     if (loggedIn) {
       api
         .getImages()
         .then((res) => {
-          setCards(res);
+          setCards(res.data);
         })
         .catch((err) => {
           console.log(err);
@@ -240,13 +249,21 @@ function App() {
       api
         .getProfileInfo()
         .then((res) => {
-          setCurrentUser(res);
+          setCurrentUser(res.data);
         })
         .catch((err) => {
           console.log(err);
         });
     }
   }, [loggedIn]);
+
+  useEffect(() => {
+    cbTokenCheck();
+  }, [cbTokenCheck, loggedIn]);
+
+  useEffect(() => {
+    getInfo();
+  }, [getInfo, loggedIn]);
 
   return (
     <div className="page">
@@ -320,7 +337,11 @@ function App() {
             isOpen={isInfoPopupOpen}
             isOk={isAuthOk}
             onClose={closeAllPopups}
-            message={isAuthOk ? 'Вы успешно зарегистрировались!' : `Что-то пошло не так! Попробуйте ещё раз.`}
+            message={
+              isAuthOk
+                ? "Вы успешно зарегистрировались!"
+                : `Что-то пошло не так! Попробуйте ещё раз.`
+            }
           />
           <Route path="*">
             {loggedIn ? <Redirect to="/" /> : <Redirect to="/login" />}
