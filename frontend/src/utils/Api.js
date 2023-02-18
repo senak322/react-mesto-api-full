@@ -1,14 +1,12 @@
- class Api {
+class Api {
   constructor(url, token) {
     this._url = url;
-    this._token = token;
-    this._headers = {
-      Authorization: `Bearer ${this._token}`,
-      'Content-Type': 'application/json'
-    }
+    // this._token = token;
+    // this._headers = {
+    //   // Authorization: `Bearer ${this._token}`,
+    //   "Content-Type": "application/json",
+    // };
   }
-
-  
 
   _getResponseData(res) {
     if (!res.ok) {
@@ -18,94 +16,113 @@
   }
 
   getImages() {
+    this._token = localStorage.getItem("token");
     return fetch(`${this._url}/cards`, {
-      headers: this._headers
-    })
-    .then(this._getResponseData)
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this._token}`,
+      },
+    }).then(this._getResponseData);
   }
 
   getProfileInfo() {
+    this._token = localStorage.getItem("token");
     return fetch(`${this._url}/users/me`, {
-    headers: this._headers
-  })
-    .then(this._getResponseData)
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this._token}`,
+      },
+    }).then(this._getResponseData);
   }
 
   editInfo(values) {
+    this._token = localStorage.getItem("token");
     return fetch(`${this._url}/users/me`, {
-      method: 'PATCH',
-      headers: this._headers,
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this._token}`,
+      },
       body: JSON.stringify({
         name: values.name,
-        about: values.about
-      })
-    })
-    .then(this._getResponseData)
+        about: values.about,
+      }),
+    }).then(this._getResponseData);
   }
 
   addCard(values) {
+    this._token = localStorage.getItem("token");
     return fetch(`${this._url}/cards`, {
-      method: 'POST',
-      headers: this._headers,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this._token}`,
+      },
       body: JSON.stringify({
         name: values.place,
-        link: values.link
-      })
-    })
-    .then(this._getResponseData)
+        link: values.link,
+      }),
+    }).then(this._getResponseData);
   }
 
   deleteCard(cardId) {
+    this._token = localStorage.getItem("token");
     return fetch(`${this._url}/cards/${cardId}`, {
-      method: 'DELETE',
-      headers: this._headers
-    })
-    .then(this._getResponseData)
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this._token}`,
+      },
+    }).then(this._getResponseData);
   }
 
   likeCard(cardId) {
+    this._token = localStorage.getItem("token");
     return fetch(`${this._url}/cards/${cardId}/likes`, {
-      method: 'PUT',
-      headers: this._headers
-
-    })
-    .then(this._getResponseData)
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this._token}`,
+      },
+    }).then(this._getResponseData);
   }
 
   unLikeCard(cardId) {
+    this._token = localStorage.getItem("token");
     return fetch(`${this._url}/cards/${cardId}/likes`, {
-      method: 'DELETE',
-      headers: this._headers
-
-    })
-    .then(this._getResponseData)
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this._token}`,
+      },
+    }).then(this._getResponseData);
   }
 
   changeLikeCardStatus(cardId, isLiked) {
     if (isLiked) {
       this.status = this.unLikeCard(cardId);
-      return this.status
+      return this.status;
     } else {
       this.status = this.likeCard(cardId);
-      return this.status
+      return this.status;
     }
   }
 
   setAvatar(url) {
+    this._token = localStorage.getItem("token");
     return fetch(`${this._url}/users/me/avatar`, {
-      method: 'PATCH',
-      headers: this._headers,
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this._token}`,
+      },
       body: JSON.stringify({
-        avatar: url.avatar
-      })
-
-    })
-    .then(this._getResponseData)
+        avatar: url.avatar,
+      }),
+    }).then(this._getResponseData);
   }
-
 }
 
-const api = new Api('https://api.mesto.viznyi.front.nomoredomains.work', localStorage.getItem("token"))
+const api = new Api("https://api.mesto.viznyi.front.nomoredomains.work");
 
-export {api};
-
+export { api };

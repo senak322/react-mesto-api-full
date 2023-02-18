@@ -180,8 +180,6 @@ function App() {
     api
       .addCard(card)
       .then((res) => {
-        console.log(res.data);
-        console.log(cards);
         setCards([res.data, ...cards]);
         closeAllPopups();
       })
