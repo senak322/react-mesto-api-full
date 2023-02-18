@@ -226,6 +226,7 @@ function App() {
     login(email, password)
       .then((res) => {
         if (res.jwt) {
+          localStorage.setItem("token", res.jwt)
           setLoggedIn(true);
           history.push("/");
         }

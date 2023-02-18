@@ -104,9 +104,8 @@
   }
 
 }
-const token = localStorage.getItem("token");
 
-const api = new Api('https://api.mesto.viznyi.front.nomoredomains.work', token)
+const api = new Api('https://api.mesto.viznyi.front.nomoredomains.work', localStorage.getItem("token"))
 
 export {api};
 
